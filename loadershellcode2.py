@@ -208,7 +208,7 @@ int main() {{
     vector<uint8_t> decoded_shellcode = decode_yugioh_shellcode(encoded_shellcode);
     
     if (decoded_shellcode.empty()) {{
-        cerr << "Échec du décodage!" << endl;
+        cerr << "Echec du décodage!" << endl;
         return 1;
     }}
     
